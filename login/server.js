@@ -1,5 +1,5 @@
 const express = require('express');
-const mysql = require('mysql2');
+
 
 
 const bodyParser = require('body-parser');
@@ -7,6 +7,8 @@ const cors = require('cors');
 
 const tstRoute = require("./routes/auth.routes");
 const contrat2 = require("./routes/contrat2.routes");
+const decision = require("./routes/decision.routes");
+const jouissance = require("./routes/jouissance.routes");
 
 require('dotenv').config();
 
@@ -21,27 +23,15 @@ app.use('/api_auth', (req, res, next) => {
     next();
 }, tstRoute);
 app.use('/api_contrat2', contrat2);
+app.use('/decision', decision);
+app.use('/jouissance', jouissance);
 
-// Configuration de la connexion MySQL
-const db = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'login_system',
-    port: 3308
-});
 
-db.connect((err) => {
-    if (err) {
-        console.error('Erreur de connexion à la base de données:', err);
-    } else {
-        console.log('Connecté à la base de données MySQL');
-    }
-});
+
 
 app.listen(port, () => {
     console.log(`Serveur Node.js en cours d'exécution sur http://localhost:${port}`);
 });
 
 
-module.exports = db; 
+

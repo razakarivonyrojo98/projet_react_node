@@ -59,7 +59,6 @@ exports.updateMonContrat2 = async (req, res) => {
     Immatricule,name,firstName,corps, assimilation,diplomer, services,ciscolaire,date_services,date_effet,duration,index,
   } = req.body;
 
-
   try {
     const [result] = await db.query(
       `UPDATE DeuxiemeContrat SET 

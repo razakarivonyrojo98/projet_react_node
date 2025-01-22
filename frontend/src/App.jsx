@@ -4,11 +4,12 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { FaFileAlt, FaUserPlus, FaUsers } from 'react-icons/fa'; // Import des icônes
 import './App.css';
 import Accueil from './components/congé/Accueil';
-import CongeMaladie from './components/congé/CongeMaladie';
-import CongeMaternite from './components/congé/CongeMaternite';
+import Decision from './components/congé/Decision';
+import Jouissance from './components/congé/Jouissance';
 import Login from './components/Auth/Login';
 import Registre from './components/Auth/Registre';
-import Contrat2 from './components/congé/contrat2';
+import Conge from './components/congé/Conge';
+import { CiLogout } from "react-icons/ci";
 
 const pageVariants = {
   initial: { opacity: 0, x: 100 },
@@ -27,7 +28,7 @@ function App() {
     <Router>
       <div className="app-container">
         {/* Sidebar */}
-        {isAuthenticated && (
+      
           <motion.div
             className="sidebar"
             initial={{ x: -200 }}
@@ -41,24 +42,30 @@ function App() {
                   <FaFileAlt className="icon" /> Accueil
                 </Link>
               </li>
+
               <li>
-                <Link to="/CongeMaternite">
-                  <FaUserPlus className="icon" /> Congé de maternité
+                <Link to="/decision">
+                  <FaUsers className="icon" /> Demande des decision
                 </Link>
               </li>
               <li>
-                <Link to="/CongeMaladie">
-                  <FaUsers className="icon" /> Congé de maladie
+                <Link to="/jouissance">
+                  <FaUsers className="icon" /> Demande des jouissance de congé
                 </Link>
               </li>
               <li>
-                <Link to="/contrat">
-                  <FaUsers className="icon" /> Contrat
+                <Link to="/conge">
+                  <FaUsers className="icon" /> Demande de congé
+                </Link>
+              </li>
+              <li>
+                <Link to="/">
+                  <CiLogout className="icon" /> Logout
                 </Link>
               </li>
             </ul>
           </motion.div>
-        )}
+      
 
         {/* Main content */}
         <div className="main-content">
@@ -78,9 +85,7 @@ function AnimatedRoutes({ isAuthenticated, handleLogin }) {
         <Route
           path="/"
           element={
-            isAuthenticated ? (
-              <Navigate to="/accueil" />
-            ) : (
+             
               <motion.div
                 initial="initial"
                 animate="animate"
@@ -88,9 +93,9 @@ function AnimatedRoutes({ isAuthenticated, handleLogin }) {
                 variants={pageVariants}
                 transition={{ duration: 0.5 }}
               >
-                <Login onLogin={handleLogin} />
+                <Login  />
               </motion.div>
-            )
+            
           }
         />
         <Route
@@ -107,7 +112,7 @@ function AnimatedRoutes({ isAuthenticated, handleLogin }) {
             </motion.div>
           }
         />
-        {isAuthenticated && (
+        
           <>
             <Route
               path="/accueil"
@@ -123,8 +128,9 @@ function AnimatedRoutes({ isAuthenticated, handleLogin }) {
                 </motion.div>
               }
             />
+        
             <Route
-              path="/CongeMaladie"
+              path="/decision"
               element={
                 <motion.div
                   initial="initial"
@@ -133,12 +139,12 @@ function AnimatedRoutes({ isAuthenticated, handleLogin }) {
                   variants={pageVariants}
                   transition={{ duration: 0.5 }}
                 >
-                  <CongeMaladie />
+                  <Decision />
                 </motion.div>
               }
             />
             <Route
-              path="/CongeMaternite"
+              path="/jouissance"
               element={
                 <motion.div
                   initial="initial"
@@ -147,12 +153,12 @@ function AnimatedRoutes({ isAuthenticated, handleLogin }) {
                   variants={pageVariants}
                   transition={{ duration: 0.5 }}
                 >
-                  <CongeMaternite />
+                  <Jouissance />
                 </motion.div>
               }
             />
             <Route
-              path="/contrat"
+              path="/conge"
               element={
                 <motion.div
                   initial="initial"
@@ -161,12 +167,12 @@ function AnimatedRoutes({ isAuthenticated, handleLogin }) {
                   variants={pageVariants}
                   transition={{ duration: 0.5 }}
                 >
-                  <Contrat2 />
+                  <Conge />
                 </motion.div>
               }
             />
           </>
-        )}
+      
       </Routes>
     </AnimatePresence>
   );
