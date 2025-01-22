@@ -19,7 +19,8 @@ const styles = StyleSheet.create({
   },
   header: {
     textAlign: "right",
-    marginBottom: 20,
+    marginLeft: 150,
+    marginBottom: 70,
   },
   section: {
     marginBottom: 10,
@@ -37,7 +38,7 @@ const styles = StyleSheet.create({
 });
 
 
-const PDFDocument = () => {
+const PDFDocument = ({ contrat }) => {
   return (
     <>
        <Document>
@@ -45,15 +46,15 @@ const PDFDocument = () => {
       {/* En-tête */}
       <View style={styles.header}>
         <Text>Fianarantsoa le,</Text>
-        <Text>NOM : RAKOTOARIVONY</Text>
-        <Text>PRENOMS : Jean Gabriel</Text>
-        <Text>IM : 269 531</Text>
+        <Text>NOM :  {contrat.name}</Text>
+        <Text>PRENOMS : {contrat.firstName}</Text>
+        <Text>IM :  {contrat.Immatricule}</Text>
         <Text>
-          CORPS ET GRADE : Instituteur « C » PCE 1ère Échelon
+          CORPS ET GRADE : {contrat.corps}
         </Text>
         <Text>INDICE : 1020</Text>
         <Text>IMPUTATION BUDGETAIRE : 08 811 130</Text>
-        <Text>En service : au Bureau de la DRENETP HAUTE MATSIATRA</Text>
+        <Text>En service : {contrat.services}</Text>
       </View>
 
       {/* Titre */}
@@ -77,7 +78,7 @@ const PDFDocument = () => {
         <Text> Monsieur Le PREFET,</Text>
         <Text style={styles.textIndent}>
           J'ai l'honneur de solliciter votre haute bienveillance de bien vouloir
-          m'octroyer une décision de congé annuel de TRENTE JOURS (30 jours) avec
+          m'octroyer une décision de congé annuel de {contrat.duration} avec
           solde entière au titre de l'année 2020 pour jouir à FIANARANTSOA et
           AMBALAVAO.
         </Text>
@@ -92,7 +93,8 @@ const PDFDocument = () => {
         <Text>AVIS DU CHEF DE SERVICE :</Text>
         <Text>L’intéressé</Text>
         <Text style={{ marginTop: 50 }}>
-          RAKOTOARIVONY Jean Gabriel
+          
+          {contrat.name} {contrat.firstName}
         </Text>
       </View>
     </Page>

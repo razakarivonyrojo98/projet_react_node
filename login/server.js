@@ -9,6 +9,7 @@ const tstRoute = require("./routes/auth.routes");
 const contrat2 = require("./routes/contrat2.routes");
 const decision = require("./routes/decision.routes");
 const jouissance = require("./routes/jouissance.routes");
+const stat = require("./routes/stat.routes");
 
 require('dotenv').config();
 
@@ -25,6 +26,7 @@ app.use('/api_auth', (req, res, next) => {
 app.use('/api_contrat2', contrat2);
 app.use('/decision', decision);
 app.use('/jouissance', jouissance);
+app.use('/stat', stat);
 
 
 

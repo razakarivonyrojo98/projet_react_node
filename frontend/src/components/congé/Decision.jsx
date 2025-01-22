@@ -96,7 +96,13 @@ const Decision = () => {
                                 <td><label >Date de validation</label>
                                   <input type="date" value={rows[0].date_validation} onChange={(e) => handleChange(0, 'date_validation', e.target.value)} /></td>
                                 <td><label >Satut</label>
-                                  <input type="text" value={rows[0].statut} onChange={(e) => handleChange(0, 'statut', e.target.value)} placeholder="Statut" /></td>
+                                  <select 
+                                    value={rows[0].statut} onChange={(e) => handleChange(0, 'statut', e.target.value)} 
+                                  >
+                                    <option value="en_cours">en_cours</option>
+                                    <option value="termine">termine</option>
+                                  </select>
+                                  </td>
                                 <td><label >Date d'expiration</label>
                                   <input type="date" value={rows[0].date_expiration} onChange={(e) => handleChange(0, 'date_expiration', e.target.value)} /></td>                           
                             </tr>

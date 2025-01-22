@@ -1,0 +1,134 @@
+/* style/configuration.css */
+
+/* Global Styles (N'hésitez pas à personnaliser si nécessaire) */
+.config-wrapper {
+   background-color: #fff;
+   padding: 30px;
+   margin: 20px auto;
+   width: 70vw;
+   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+   border-radius: 12px;
+   transition: box-shadow 0.3s ease;
+ }
+ 
+ .config-wrapper h2 {
+   font-size: 2rem;
+   color: #333;
+   margin-bottom: 20px;
+ }
+ 
+ .config-item {
+   font-size: 1rem;
+   margin: 10px 0;
+   padding: 10px;
+   background-color: #fafafa;
+   border-radius: 8px;
+ }
+ 
+ .config-item strong {
+   color: #555;
+ }
+ 
+ .config-item a {
+   color: #007bff;
+   text-decoration: none;
+ }
+ 
+ .config-item a:hover {
+   text-decoration: underline;
+ }
+ 
+ /* Logs Section */
+ .config-item button {
+   background-color: #007bff;
+   color: white;
+   padding: 10px 15px;
+   border: none;
+   border-radius: 8px;
+   cursor: pointer;
+   transition: background-color 0.3s ease, transform 0.3s ease;
+ }
+ 
+ .config-item button:hover {
+   background-color: #0056b3;
+   transform: translateY(-3px);
+   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+ }
+ 
+ .config-item ul {
+   list-style-type: none;
+   padding-left: 0;
+ }
+ 
+ .config-item ul li {
+   font-size: 0.9rem;
+   color: #555;
+   margin-bottom: 10px;
+ }
+ 
+ .config-item ul li:before {
+   content: '📝 ';
+   margin-right: 8px;
+ }
+ 
+ /* Reload Configuration Button */
+ .config-item button.reload-btn {
+   background-color: #28a745;
+   margin-top: 15px;
+ }
+ 
+ .config-item button.reload-btn:hover {
+   background-color: #218838;
+ }
+ 
+ /* Table Layout */
+ .config-item table {
+   width: 100%;
+   border-collapse: collapse;
+   margin-top: 20px;
+   background-color: #fff;
+   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+   border-radius: 8px;
+ }
+ 
+ .config-item table th, .config-item table td {
+   padding: 12px;
+   text-align: left;
+   border: 1px solid #ddd;
+   font-size: 0.95rem;
+ }
+ 
+ .config-item table th {
+   background-color: #f5f7fa;
+   font-weight: 500;
+ }
+ 
+ .config-item table tr:nth-child(even) {
+   background-color: #f9f9f9;
+ }
+ 
+ /* Responsive Design */
+ @media (max-width: 768px) {
+   .config-wrapper {
+     padding: 20px;
+     width: 90%;
+   }
+ 
+   .config-item {
+     font-size: 0.9rem;
+   }
+ 
+   .config-item button {
+     width: 100%;
+     padding: 14px;
+   }
+ 
+   .config-item ul li {
+     font-size: 0.85rem;
+   }
+ 
+   .config-item table th, .config-item table td {
+     padding: 10px;
+   }
+ }
+ 

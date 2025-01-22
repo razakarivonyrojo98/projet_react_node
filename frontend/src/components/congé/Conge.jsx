@@ -3,12 +3,14 @@ import axios from 'axios';
 import { motion } from 'framer-motion';
 import { format, parseISO } from 'date-fns';
 import { MdDelete, MdEdit } from "react-icons/md";
+import { PDFDownloadLink } from '@react-pdf/renderer';
+import PDFDocument from './PDFDocument';
+import { CiSaveDown2 } from "react-icons/ci";
 
 const Contrat2 = () => {
     const initialRow = {
         id: "",Immatricule: "",name: "",firstName: "",
-        corps: "", assimilation: "", diplomer: "",services: "",ciscolaire: "",
-        date_services: "",date_effet: "",duration: "",index: "",
+        corps: "",services: "",ciscolaire: "",duration: "",index: "",
     };
 
     const [rows, setRows] = useState([initialRow]);
@@ -98,21 +100,14 @@ const Contrat2 = () => {
                                 <td><label >Prenom</label>
                                     <input type="text" value={rows[0].firstName} onChange={(e) => handleChange(0, 'firstName', e.target.value)} placeholder="Prénom" /></td>
                                 <td><label >Corps</label>
-                                    <input type="text" value={rows[0].corps} onChange={(e) => handleChange(0, 'corps', e.target.value)} placeholder="Corps" /></td>
-                                <td><label >Assimulation</label>
-                                    <input type="text" value={rows[0].assimilation} onChange={(e) => handleChange(0, 'assimilation', e.target.value)} placeholder="Assimilation" /></td>
-                                <td><label >Diplome</label>
-                                    <input type="text" value={rows[0].diplomer} onChange={(e) => handleChange(0, 'diplomer', e.target.value)} placeholder="Diplôme" /></td>
+                                    <input type="text" value={rows[0].corps} onChange={(e) => handleChange(0, 'corps', e.target.value)} placeholder="Corps" /></td>    
                             </tr>
                             <tr>
                                 <td><label >Service</label>
                                     <input type="text" value={rows[0].services} onChange={(e) => handleChange(0, 'services', e.target.value)} placeholder="Service" /></td>
                                 <td><label >CISCO</label>
                                     <input type="text" value={rows[0].ciscolaire} onChange={(e) => handleChange(0, 'ciscolaire', e.target.value)} placeholder="CISCO" /></td>
-                                <td><label >Date de service</label>
-                                    <input type="date" value={rows[0].date_services} onChange={(e) => handleChange(0, 'date_services', e.target.value)} /></td>
-                                <td><label >Date d'effet</label>
-                                    <input type="date" value={rows[0].date_effet} onChange={(e) => handleChange(0, 'date_effet', e.target.value)} /></td>
+                                
                                 <td><label >Duré</label>
                                     <input type="number" value={rows[0].duration} onChange={(e) => handleChange(0, 'duration', e.target.value)} placeholder="Durée" /></td>
                             </tr>
@@ -132,9 +127,9 @@ const Contrat2 = () => {
                                 <th>Nom</th>
                                 <th>Prénom</th>
                                 <th>Corps</th>
-                                <th>Assimilation</th>
-                                <th>Date Service</th>
-                                <th>Date Effet</th>
+                                <th>Service</th>
+                                <th>CISCO</th>
+                                <th>Duree</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -146,12 +141,20 @@ const Contrat2 = () => {
                                     <td>{contrat.name}</td>
                                     <td>{contrat.firstName}</td>
                                     <td>{contrat.corps}</td>
-                                    <td>{contrat.assimilation}</td>
-                                    <td>{formatDate(contrat.date_services)}</td>
-                                    <td>{formatDate(contrat.date_effet)}</td>
+                                    <td>{contrat.services}</td>
+                                    <td>{contrat.ciscolaire}</td>
+                                    <td>{contrat.duration}</td>
                                     <td>
                                         <MdEdit onClick={() => handleEdit(contrat, index)} style={{ cursor: 'pointer', color: 'blue' }} />
                                         <MdDelete onClick={() => handleDelete(contrat.id)} style={{ cursor: 'pointer', color: 'red' }} />
+                                        <PDFDownloadLink
+                                            document={<PDFDocument contrat={contrat} />}
+                                            fileName={`Demande_Conge_${contrat.Immatricule}.pdf`}
+                                        >
+                                            {({ loading }) =>
+                                                loading ? "Chargement..." : <CiSaveDown2 />
+                                            }
+                                        </PDFDownloadLink>
                                     </td>
                                 </tr>
                             ))}
