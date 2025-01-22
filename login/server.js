@@ -1,7 +1,4 @@
 const express = require('express');
-
-
-
 const bodyParser = require('body-parser');
 const cors = require('cors');
 
@@ -11,6 +8,9 @@ const decision = require("./routes/decision.routes");
 const jouissance = require("./routes/jouissance.routes");
 const stat = require("./routes/stat.routes");
 
+// Importer la connexion à la base de données
+const db = require('./config/database');
+
 require('dotenv').config();
 
 const app = express();
@@ -19,10 +19,7 @@ const port = 3000;
 app.use(cors());
 app.use(bodyParser.json());
 
-app.use('/api_auth', (req, res, next) => {
-    req.db = db; // Ajouter `db` à la requête
-    next();
-}, tstRoute);
+app.use('/api_auth',tstRoute);
 app.use('/api_contrat2', contrat2);
 app.use('/decision', decision);
 app.use('/jouissance', jouissance);

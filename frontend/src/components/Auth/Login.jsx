@@ -14,7 +14,6 @@ const Login = () => {
   const navigate = useNavigate();
 
 
-
   const handleChange = function (e) {
     const { name, value } = e.target;
     console.log(name, value);
@@ -40,11 +39,8 @@ const Login = () => {
       setErrorMessage('');
       const token = response.data.token;
       console.log('Token reçu:', token);
-
-      // Sauvegarder le token dans le localStorage ou contexte (selon votre besoin)
       localStorage.setItem('authToken', token);
-
-      // Rediriger vers la page d'accueil
+      
       navigate('/accueil'); // Navigation vers la page d'accueil
     } catch (error) {
       // Gérer les erreurs (401 ou autres)
