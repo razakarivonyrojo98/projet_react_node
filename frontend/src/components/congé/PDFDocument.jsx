@@ -12,31 +12,72 @@ import {
 // Définir les styles du document
 const styles = StyleSheet.create({
   page: {
-    padding: 40,
-    fontSize: 12,
+    padding: 60,
+    fontSize: 13,
     fontFamily: "Times-Roman",
     lineHeight: 1.5,
   },
   header: {
     textAlign: "right",
-    marginLeft: 150,
-    marginBottom: 70,
-  },
-  section: {
+    marginLeft: 100,
     marginBottom: 10,
   },
+  header1: {
+    textAlign: "right",
+    marginRight: 90,
+    marginBottom: 20,
+  },
+  section: {
+    marginBottom: 3,
+    marginLeft:100
+  },
+  nom: {
+    marginBottom: 3,
+    marginRight:200
+  },
+  prenom: {
+    marginBottom: 3,
+    marginRight:173
+  },
+  im: {
+   marginBottom: 3,
+    marginRight:225
+  },
+  corps: {
+    marginBottom: 3,
+    marginRight:135
+  },
+  indice: {
+    marginBottom: 3,
+    marginRight:200
+  },
+  inputation: {
+    marginBottom: 3,
+    marginRight:50
+  },
+  service: {
+    marginBottom: 10,
+    marginRight:195
+  },
   bold: {
-    fontWeight: "bold",
+    marginRight: 100,
+    marginTop:10,
+    marginBottom:10
   },
   textIndent: {
     textIndent: 30,
+    marginTop:5,
+    marginBottom:5
   },
   signature: {
-    marginTop: 30,
+    marginTop: 40,
     textAlign: "right",
+    marginRight: 60, 
+  },
+  signature1: {
+   display:"flex"
   },
 });
-
 
 const PDFDocument = ({ contrat }) => {
   return (
@@ -44,17 +85,16 @@ const PDFDocument = ({ contrat }) => {
        <Document>
     <Page size="A4" style={styles.page}>
       {/* En-tête */}
+      <Text style={styles.header1}>Fianarantsoa le,</Text>
       <View style={styles.header}>
-        <Text>Fianarantsoa le,</Text>
-        <Text>NOM :  {contrat.name}</Text>
-        <Text>PRENOMS : {contrat.firstName}</Text>
-        <Text>IM :  {contrat.Immatricule}</Text>
-        <Text>
-          CORPS ET GRADE : {contrat.corps}
-        </Text>
-        <Text>INDICE : 1020</Text>
-        <Text>IMPUTATION BUDGETAIRE : 08 811 130</Text>
-        <Text>En service : {contrat.services}</Text>
+        
+        <Text style={styles.nom}>NOM : {contrat.name} </Text>
+        <Text style={styles.prenom}>PRENOMS : {contrat.firstName} </Text>
+        <Text style={styles.im}>IM : {contrat.Immatricule }</Text>
+        <Text style={styles.corps}>CORPS ET GRADE : {contrat.corps} </Text>
+        <Text style={styles.indice}>INDICE : 1020</Text>
+        <Text style={styles.inputation}>IMPUTATION BUDGETAIRE : 08 811 130</Text>
+        <Text style={styles.service}>En service : {contrat.services} </Text>
       </View>
 
       {/* Titre */}
@@ -68,9 +108,9 @@ const PDFDocument = ({ contrat }) => {
       </View>
 
       {/* Objet */}
-      <View style={styles.section}>
-        <Text style={styles.bold}>OBJET :</Text>
-        <Text>Demande de décision de congé Annuel</Text>
+      <View >
+        <Text style={styles.bold}>OBJET : Demande de décision de congé Annuel</Text>
+     
       </View>
 
       {/* Corps */}
@@ -78,7 +118,7 @@ const PDFDocument = ({ contrat }) => {
         <Text> Monsieur Le PREFET,</Text>
         <Text style={styles.textIndent}>
           J'ai l'honneur de solliciter votre haute bienveillance de bien vouloir
-          m'octroyer une décision de congé annuel de {contrat.duration} avec
+          m'octroyer une décision de congé annuel de {contrat.duration} jour avec
           solde entière au titre de l'année 2020 pour jouir à FIANARANTSOA et
           AMBALAVAO.
         </Text>
@@ -89,18 +129,21 @@ const PDFDocument = ({ contrat }) => {
       </View>
 
       {/* Signature */}
+      
       <View style={styles.signature}>
-        <Text>AVIS DU CHEF DE SERVICE :</Text>
-        <Text>L’intéressé</Text>
-        <Text style={{ marginTop: 50 }}>
-          
+        <View style={styles.signature1}>
+          <Text>AVIS DU CHEF DE SERVICE :</Text>
+          <Text>L’intéressé</Text>
+        </View>
+
+        <Text style={{ marginTop: 50, marginRight:30 }}> 
           {contrat.name} {contrat.firstName}
         </Text>
       </View>
     </Page>
   </Document> 
     </>
-  )
+  );
 }
 
 export default PDFDocument

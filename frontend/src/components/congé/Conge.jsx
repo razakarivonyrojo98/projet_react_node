@@ -160,7 +160,9 @@ const Contrat2 = () => {
                             ))}
                         </tbody>
                     </table>
+                    
                 </div>
+
             </motion.div>
         </>
     );
