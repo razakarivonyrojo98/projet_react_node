@@ -17,7 +17,7 @@ exports.addJouissance = async (req, res) => {
   } = req.body;
  // Générer automatiquement la date de création
   const date_creation = new Date().toISOString().slice(0, 19).replace('T', ' '); // Format 'YYYY-MM-DD HH:MM:SS'
-   const validate = "oui"; // Valeur par défaut
+   const validate = "non"; // Valeur par défaut
 
   const query = `
     INSERT INTO Jouissance 

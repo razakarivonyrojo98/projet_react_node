@@ -65,21 +65,20 @@ const handleSubmit = async () => {
 
     try {
         if (isEditing) {
-            // Appel PUT pour la mise à jour
             await axios.put(`http://localhost:3000/jouissance/${dataToSend.id}`, dataToSend);
             alert('Jouissance modifié avec succès !');
-            setIsEditing(false); // Réinitialisez l'état
+            setIsEditing(false);
         } else {
-            // Appel POST pour un nouvel ajout
             await axios.post('http://localhost:3000/jouissance', dataToSend);
             alert('Jouissance ajouté avec succès !');
         }
         fetchContratList();
-        setRows([initialRow]); // Réinitialisez le formulaire
+        setRows([initialRow]);
     } catch (error) {
         console.error('Erreur lors de l\'envoi des données :', error);
     }
 };
+
 
 
 
@@ -209,7 +208,8 @@ const handleSubmit = async () => {
                                     <td>{contrat.jour_demande}</td>
                                    
                                     <td>{formatDate(contrat.date_creation)}</td>
-                                    <td>{contrat.validate  }</td> {/* Affiche la validation */}
+                                    <td>{contrat.validate === "oui" ? "oui" : "non"}</td>
+
                                     <td>
                                         <GrValidate
                                             onClick={() => handleValidation(contrat.id)}
