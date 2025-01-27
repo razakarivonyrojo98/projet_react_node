@@ -35,7 +35,7 @@ const Login = () => {
       });
 
       // Enregistrer le token ou rediriger l'utilisateur après une connexion réussie
-      setSuccessMessage('Connexion réussie !');
+      alert('Connexion réussie !');
       setErrorMessage('');
       const token = response.data.token;
       console.log('Token reçu:', token);

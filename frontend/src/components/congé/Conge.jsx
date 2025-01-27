@@ -17,6 +17,7 @@ const Contrat2 = () => {
     const [ContratList, setContratList] = useState([]);
     const [isEditing, setIsEditing] = useState(false); // Nouvel état pour identifier l'édition
     const [editIndex, setEditIndex] = useState(null); // L'index de la ligne en cours d'édition
+    const [searchTerm, setSearchTerm] = useState("");
 
     const fetchContratList = async () => {
         try {
@@ -51,12 +52,12 @@ const Contrat2 = () => {
             if (isEditing) {
                 // Appel PUT pour la mise à jour
                 await axios.put(`http://localhost:3000/api_contrat2/${dataToSend.id}`, dataToSend);
-                alert('Contrat modifié avec succès !');
+                alert('Congé modifié avec succès !');
                 setIsEditing(false); // Réinitialisez l'état
             } else {
                 // Appel POST pour un nouvel ajout
                 await axios.post('http://localhost:3000/api_contrat2', dataToSend);
-                alert('Contrat ajouté avec succès !');
+                alert('Congé ajouté avec succès !');
             }
             fetchContratList();
             setRows([initialRow]); // Réinitialisez le formulaire
@@ -69,7 +70,7 @@ const Contrat2 = () => {
         try {
             await axios.delete(`http://localhost:3000/api_contrat2/${id}`);
             setContratList(ContratList.filter(item => item.id !== id)); // Supprimez localement
-            alert('Contrat supprimé avec succès !');
+            alert('Congé supprimé avec succès !');
         } catch (error) {
             console.error('Erreur lors de la suppression du contrat :', error);
         }
@@ -83,6 +84,10 @@ const Contrat2 = () => {
             return date; // Retourne la date brute si elle n'est pas analysable
         }
     };
+
+    const filteredContrats = ContratList.filter(contrat =>
+        contrat.Immatricule.toString().includes(searchTerm)
+    );
 
     return (
         <>
@@ -106,7 +111,16 @@ const Contrat2 = () => {
                                 <td><label >Service</label>
                                     <input type="text" value={rows[0].services} onChange={(e) => handleChange(0, 'services', e.target.value)} placeholder="Service" /></td>
                                 <td><label >CISCO</label>
-                                    <input type="text" value={rows[0].ciscolaire} onChange={(e) => handleChange(0, 'ciscolaire', e.target.value)} placeholder="CISCO" /></td>
+                                    <select type="text" value={rows[0].ciscolaire} onChange={(e) => handleChange(0, 'ciscolaire', e.target.value)} placeholder="CISCO" >
+                                        <option></option>
+                                        <option value="Ambalavao">Ambalavao</option>
+                                        <option value="Ambohimahasoa">Ambohimahasoa</option>
+                                        <option value="Fianarantsoa">Fianarantsoa</option>
+                                        <option value="Lalangina">Lalangina</option>
+                                        <option value="Ikalamavony">Ikalamavony</option>
+                                        <option value="Isandra">Isandra</option>
+                                        <option value="Vohibato">Vohibato</option>
+                                    </select></td>
                                 
                                 <td><label >Duré</label>
                                     <input type="number" value={rows[0].duration} onChange={(e) => handleChange(0, 'duration', e.target.value)} placeholder="Durée" /></td>
@@ -118,6 +132,14 @@ const Contrat2 = () => {
 
                 {/* Liste des contrats */}
                 <div className="table-wrapper">
+                    <div className="search-bar">
+                        <input
+                            type="text"
+                            placeholder="Rechercher par IM"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                    </div>
                     <h2>Liste des demandes de congé</h2>
                     <table>
                         <thead>
@@ -134,7 +156,8 @@ const Contrat2 = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {ContratList.map((contrat, index) => (
+                            {filteredContrats.length > 0 ? (
+                                filteredContrats.map((contrat, index) => (
                                 <tr key={index}>
                                     <td>{contrat.id}</td>
                                     <td>{contrat.Immatricule}</td>
@@ -157,7 +180,12 @@ const Contrat2 = () => {
                                         </PDFDownloadLink>
                                     </td>
                                 </tr>
-                            ))}
+                            ))
+                        ) : (
+                                <tr>
+                                    <td colSpan="6" style={{ textAlign: 'center' }}>Aucun résultat trouvé</td>
+                                </tr>
+                            )}
                         </tbody>
                     </table>
                     

@@ -3,11 +3,13 @@ import axios from 'axios';
 import { motion } from 'framer-motion';
 import { format, parseISO } from 'date-fns';
 import { MdDelete, MdEdit } from "react-icons/md";
+import { GrValidate } from "react-icons/gr";
+import { differenceInDays } from 'date-fns'; 
 
 const Jouissance = () => {
   const initialRow = {
         id: "",Immatricule: "",Lieu: "",Motif: "",
-        date_debut: "", date_fin: "", jour_demande: "",solde: "",date_creation: "",
+        date_debut: "", date_fin: "", jour_demande: "",solde: "",date_creation: "",validate :""
 
     };
 
@@ -15,6 +17,7 @@ const Jouissance = () => {
     const [ContratList, setContratList] = useState([]);
     const [isEditing, setIsEditing] = useState(false); // Nouvel état pour identifier l'édition
     const [editIndex, setEditIndex] = useState(null); // L'index de la ligne en cours d'édition
+    const [searchTerm, setSearchTerm] = useState("");
 
     const fetchContratList = async () => {
         try {
@@ -30,11 +33,21 @@ const Jouissance = () => {
         fetchContratList();
     }, []);
 
-    const handleChange = (index, field, value) => {
-        const newRows = [...rows];
-        newRows[index][field] = value;
-        setRows(newRows);
-    };
+const handleChange = (index, field, value) => {
+    const newRows = [...rows];
+    newRows[index][field] = value;
+
+    if (field === 'date_debut' || field === 'date_fin') {
+        const { date_debut, date_fin } = newRows[index];
+        if (date_debut && date_fin) {
+            // Calculez la différence en jours
+            const diff = differenceInDays(new Date(date_fin), new Date(date_debut));
+            newRows[index].jour_demande = diff >= 0 ? diff : 0; // Évitez les valeurs négatives
+        }
+    }
+
+    setRows(newRows);
+};
 
     const handleEdit = (contrat, index) => {
         setRows([contrat]); // Remplit le formulaire avec les données sélectionnées
@@ -42,26 +55,33 @@ const Jouissance = () => {
         setEditIndex(index);
     };
 
-    const handleSubmit = async () => {
-        const dataToSend = rows[0]; // Prenez la première (et unique) ligne de `rows`
-
-        try {
-            if (isEditing) {
-                // Appel PUT pour la mise à jour
-                await axios.put(`http://localhost:3000/jouissance/${dataToSend.id}`, dataToSend);
-                alert('Contrat modifié avec succès !');
-                setIsEditing(false); // Réinitialisez l'état
-            } else {
-                // Appel POST pour un nouvel ajout
-                await axios.post('http://localhost:3000/jouissance', dataToSend);
-                alert('Contrat ajouté avec succès !');
-            }
-            fetchContratList();
-            setRows([initialRow]); // Réinitialisez le formulaire
-        } catch (error) {
-            console.error('Erreur lors de l\'envoi des données :', error);
-        }
+const handleSubmit = async () => {
+    const today = format(new Date(), 'yyyy-MM-dd'); // Formate la date actuelle au format YYYY-MM-DD
+    const dataToSend = { 
+        ...rows[0], 
+        validate: isEditing ? rows[0].validate : "non", // Initialiser validate à "non" pour un ajout
+        date_creation: isEditing ? rows[0].date_creation : today // Définir la date actuelle pour un nouvel ajout
     };
+
+    try {
+        if (isEditing) {
+            // Appel PUT pour la mise à jour
+            await axios.put(`http://localhost:3000/jouissance/${dataToSend.id}`, dataToSend);
+            alert('Jouissance modifié avec succès !');
+            setIsEditing(false); // Réinitialisez l'état
+        } else {
+            // Appel POST pour un nouvel ajout
+            await axios.post('http://localhost:3000/jouissance', dataToSend);
+            alert('Jouissance ajouté avec succès !');
+        }
+        fetchContratList();
+        setRows([initialRow]); // Réinitialisez le formulaire
+    } catch (error) {
+        console.error('Erreur lors de l\'envoi des données :', error);
+    }
+};
+
+
 
     const handleDelete = async (id) => {
         try {
@@ -82,10 +102,46 @@ const Jouissance = () => {
         }
     };
 
+    const filteredContrats = ContratList.filter(contrat =>
+        contrat.Immatricule.toString().includes(searchTerm)
+    );
+
+ const handleValidation = async (id) => {
+    try {
+        // Trouver le contrat à mettre à jour localement
+        const contratToUpdate = ContratList.find((contrat) => contrat.id === id);
+
+        if (!contratToUpdate) {
+            alert("Contrat introuvable !");
+            return;
+        }
+
+        // Mettre à jour la valeur de validate à "oui"
+        const updatedContrat = { ...contratToUpdate, validate: "oui" };
+
+        // Appel API pour mettre à jour côté serveur
+        await axios.put(`http://localhost:3000/jouissance/${id}`, updatedContrat);
+
+        // Mise à jour locale pour refléter les changements immédiatement
+        setContratList((prevList) =>
+            prevList.map((contrat) =>
+                contrat.id === id ? { ...contrat, validate: "oui" } : contrat
+            )
+        );
+
+        alert("Validation effectuée avec succès !");
+    } catch (error) {
+        console.error("Erreur lors de la validation :", error);
+        alert("Erreur lors de la validation !");
+    }
+};
+
+
+
     return (
         <>
             <motion.div className="main-content-btf">
-                <h1>{isEditing ? "Modifier un conge" : "Ajouter un congé"}</h1>
+                <h1>{isEditing ? "Modifier la formulaire de Jouissance" : "Ajouter la formulaire de jouissance"}</h1>
                 <div className="form-wrapper">
                     <motion.table border="1" className="btf-form-table">
                         {/* Formulaire */}
@@ -105,10 +161,7 @@ const Jouissance = () => {
                                   <input type="number" value={rows[0].jour_demande} onChange={(e) => handleChange(0, 'jour_demande', e.target.value)} placeholder="jour_demande" /></td>
                             </tr>
                             <tr>
-                                <td><label >Solde</label>
-                                  <input type="number" value={rows[0].solde} onChange={(e) => handleChange(0, 'solde', e.target.value)} placeholder="solde" /></td>
-                                <td><label >Date de creation</label>
-                                  <input type="date" value={rows[0].date_creation} onChange={(e) => handleChange(0, 'date_creation', e.target.value)} placeholder="date_creation" /></td>
+                                
                                
                             </tr>
                         </tbody>
@@ -118,7 +171,15 @@ const Jouissance = () => {
 
                 {/* Liste des contrats */}
                 <div className="table-wrapper">
-                    <h2>Liste des demandes de congé</h2>
+                    <h2>Liste des demandes de Jouissance</h2>
+                    <div className="search-bar">
+                        <input
+                            type="text"
+                            placeholder="Rechercher par IM"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                    </div>
                     <table>
                         <thead>
                             <tr>
@@ -128,14 +189,15 @@ const Jouissance = () => {
                                 <th>Motif</th>
                                 <th>Date du debut</th>
                                 <th>Date fin</th>
-                                <th>Duré</th>
-                                <th>Solde</th>
+                                <th>Duré </th>
                                 <th>Date de creation</th>
+                                <th>Validation</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {ContratList.map((contrat, index) => (
+                            {filteredContrats.length > 0 ? (
+                                filteredContrats.map((contrat, index) => (
                                 <tr key={index}>
                                     <td>{contrat.id}</td>
                                     <td>{contrat.Immatricule}</td>
@@ -145,14 +207,24 @@ const Jouissance = () => {
                                     <td>{formatDate(contrat.date_debut)}</td>
                                     <td>{formatDate(contrat.date_fin)}</td>
                                     <td>{contrat.jour_demande}</td>
-                                    <td>{contrat.solde}</td>
+                                   
                                     <td>{formatDate(contrat.date_creation)}</td>
+                                    <td>{contrat.validate  }</td> {/* Affiche la validation */}
                                     <td>
+                                        <GrValidate
+                                            onClick={() => handleValidation(contrat.id)}
+                                            style={{ cursor: "pointer", color: "green" }}
+                                        />
                                         <MdEdit onClick={() => handleEdit(contrat, index)} style={{ cursor: 'pointer', color: 'blue' }} />
                                         <MdDelete onClick={() => handleDelete(contrat.id)} style={{ cursor: 'pointer', color: 'red' }} />
                                     </td>
                                 </tr>
-                            ))}
+                            ))
+                         ) : (
+                                <tr>
+                                    <td colSpan="6" style={{ textAlign: 'center' }}>Aucun résultat trouvé</td>
+                                </tr>
+                            )}
                         </tbody>
                     </table>
                 </div>

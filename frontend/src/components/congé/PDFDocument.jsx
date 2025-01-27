@@ -119,8 +119,7 @@ const PDFDocument = ({ contrat }) => {
         <Text style={styles.textIndent}>
           J'ai l'honneur de solliciter votre haute bienveillance de bien vouloir
           m'octroyer une décision de congé annuel de {contrat.duration} jour avec
-          solde entière au titre de l'année 2020 pour jouir à FIANARANTSOA et
-          AMBALAVAO.
+          solde entière au titre de l'année 2020 pour jouir à {contrat.ciscolaire}
         </Text>
         <Text style={styles.textIndent}>
           Dans l'attente d'une suite favorable de votre part, Je vous prie

@@ -17,16 +17,16 @@ exports.addJouissance = async (req, res) => {
   } = req.body;
  // Générer automatiquement la date de création
   const date_creation = new Date().toISOString().slice(0, 19).replace('T', ' '); // Format 'YYYY-MM-DD HH:MM:SS'
-
+   const validate = "oui"; // Valeur par défaut
 
   const query = `
     INSERT INTO Jouissance 
-    (Immatricule, Lieu, Motif, date_debut, date_fin, jour_demande, solde, date_creation) 
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    (Immatricule, Lieu, Motif, date_debut, date_fin, jour_demande, solde, date_creation,validate) 
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
   `;
 
   const values = [
-    Immatricule, Lieu, Motif, date_debut, date_fin, jour_demande, solde, date_creation
+    Immatricule, Lieu, Motif, date_debut, date_fin, jour_demande, solde, date_creation, validate
   ];
 
   try {
@@ -57,17 +57,17 @@ exports.getById = async (req, res) => {
 exports.updateJouissance = async (req, res) => {
   const id = req.params.id;
   const {
-    Immatricule, Lieu, Motif, date_debut, date_fin, jour_demande, solde, date_creation
+    Immatricule, Lieu, Motif, date_debut, date_fin, jour_demande, solde, date_creation,validate
   } = req.body;
 
   try {
     const [result] = await db.query(
       `UPDATE Jouissance SET 
       Immatricule = ?, Lieu = ?, Motif = ?, date_debut = ?, date_fin = ?, jour_demande = ?, solde = ?, 
-      date_creation = ?
+      date_creation = ?, validate= ?
       WHERE id = ?`,
       [
-       Immatricule, Lieu, Motif, date_debut, date_fin, jour_demande, solde, date_creation,
+       Immatricule, Lieu, Motif, date_debut, date_fin, jour_demande, solde, date_creation, validate,
         id,
       ]
     );
