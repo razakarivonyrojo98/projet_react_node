@@ -15,21 +15,30 @@ exports.addJouissance = async (req, res) => {
   const {
     Immatricule, Lieu, Motif, date_debut, date_fin, jour_demande, solde
   } = req.body;
- // Générer automatiquement la date de création
+
+  // Générer automatiquement la date de création
   const date_creation = new Date().toISOString().slice(0, 19).replace('T', ' '); // Format 'YYYY-MM-DD HH:MM:SS'
-   const validate = "non"; // Valeur par défaut
-
-  const query = `
-    INSERT INTO Jouissance 
-    (Immatricule, Lieu, Motif, date_debut, date_fin, jour_demande, solde, date_creation,validate) 
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `;
-
-  const values = [
-    Immatricule, Lieu, Motif, date_debut, date_fin, jour_demande, solde, date_creation, validate
-  ];
+  const validate = "non"; // Valeur par défaut
 
   try {
+    // Vérifier si l'Immatricule existe dans la table Decision
+    const [decision] = await db.query('SELECT 1 FROM Decision WHERE IM = ?', [Immatricule]);
+
+    if (decision.length === 0) {
+      return res.status(400).json({ message: "L'Immatricule fourni n'existe pas dans la table Decision." });
+    }
+
+    // Si l'Immatricule existe, insérer dans Jouissance
+    const query = `
+      INSERT INTO Jouissance 
+      (Immatricule, Lieu, Motif, date_debut, date_fin, jour_demande, solde, date_creation, validate) 
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `;
+
+    const values = [
+      Immatricule, Lieu, Motif, date_debut, date_fin, jour_demande, solde, date_creation, validate
+    ];
+
     const [result] = await db.query(query, values);
     res.status(201).json({
       message: "Jouissance créé avec succès !",

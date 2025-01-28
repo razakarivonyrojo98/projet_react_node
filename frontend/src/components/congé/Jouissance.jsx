@@ -4,13 +4,13 @@ import { motion } from 'framer-motion';
 import { format, parseISO } from 'date-fns';
 import { MdDelete, MdEdit } from "react-icons/md";
 import { GrValidate } from "react-icons/gr";
-import { differenceInDays } from 'date-fns'; 
+import { differenceInDays } from 'date-fns';
+import Status from "./Status"; 
 
 const Jouissance = () => {
   const initialRow = {
         id: "",Immatricule: "",Lieu: "",Motif: "",
         date_debut: "", date_fin: "", jour_demande: "",solde: "",date_creation: "",validate :""
-
     };
 
     const [rows, setRows] = useState([initialRow]);
@@ -18,6 +18,28 @@ const Jouissance = () => {
     const [isEditing, setIsEditing] = useState(false); // Nouvel état pour identifier l'édition
     const [editIndex, setEditIndex] = useState(null); // L'index de la ligne en cours d'édition
     const [searchTerm, setSearchTerm] = useState("");
+    const [validIMs, setValidIMs] = useState([]);
+    const [acceptedContrats, setAcceptedContrats] = useState([]); // Nouveaux contrats acceptés
+  const [refusedContrats, setRefusedContrats] = useState([]); // Nouveaux contrats refusés
+
+      // Pagination states
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10;
+
+const fetchValidIMs = async () => {
+    try {
+        const response = await axios.get('http://localhost:3000/decision'); // Endpoint pour récupérer les `IM`
+        const ims = response.data.map((decision) => decision.IM);
+        setValidIMs(ims);
+    } catch (error) {
+        console.error('Erreur lors de la récupération des IM :', error);
+    }
+};
+
+// Appeler cette fonction lors du montage du composant
+useEffect(() => {
+    fetchValidIMs();
+}, []);
 
     const fetchContratList = async () => {
         try {
@@ -45,7 +67,6 @@ const handleChange = (index, field, value) => {
             newRows[index].jour_demande = diff >= 0 ? diff : 0; // Évitez les valeurs négatives
         }
     }
-
     setRows(newRows);
 };
 
@@ -78,9 +99,6 @@ const handleSubmit = async () => {
         console.error('Erreur lors de l\'envoi des données :', error);
     }
 };
-
-
-
 
     const handleDelete = async (id) => {
         try {
@@ -135,7 +153,30 @@ const handleSubmit = async () => {
     }
 };
 
+    const handleAccept = (contrat) => {
+    setAcceptedContrats((prev) => [...prev, { ...contrat, status: "Accepté" }]);
+    setContratList((prev) => prev.filter((item) => item.id !== contrat.id));
+  };
 
+  const handleRefuse = (contrat) => {
+    setRefusedContrats((prev) => [...prev, { ...contrat, status: "Refusé" }]);
+    setContratList((prev) => prev.filter((item) => item.id !== contrat.id));
+  };
+
+  const currentItems = filteredContrats.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const totalPages = Math.ceil(filteredContrats.length / itemsPerPage);
+
+  const handlePageChange = (direction) => {
+    if (direction === "next" && currentPage < totalPages) {
+      setCurrentPage((prev) => prev + 1);
+    } else if (direction === "prev" && currentPage > 1) {
+      setCurrentPage((prev) => prev - 1);
+    }
+  };
 
     return (
         <>
@@ -147,7 +188,18 @@ const handleSubmit = async () => {
                         <tbody>
                             <tr>
                                 <td><label >IM</label>
-                                  <input type="text" value={rows[0].Immatricule} onChange={(e) => handleChange(0, 'Immatricule', e.target.value)} placeholder="IM" /></td>
+                                <select
+                                    value={rows[0].Immatricule}
+                                    onChange={(e) => handleChange(0, 'Immatricule', e.target.value)}
+                                >
+                                    <option value="">Sélectionnez un IM</option>
+                                    {validIMs.map((im) => (
+                                        <option key={im} value={im}>
+                                            {im}
+                                        </option>
+                                    ))}
+                                </select>
+                                </td>
                                 <td><label >Lieu</label>
                                   <input type="text" value={rows[0].Lieu} onChange={(e) => handleChange(0, 'Lieu', e.target.value)} placeholder="Lieu" /></td>
                                 <td><label >Motif</label>
@@ -159,10 +211,7 @@ const handleSubmit = async () => {
                                 <td><label >Jour de demande</label>
                                   <input type="number" value={rows[0].jour_demande} onChange={(e) => handleChange(0, 'jour_demande', e.target.value)} placeholder="jour_demande" /></td>
                             </tr>
-                            <tr>
-                                
-                               
-                            </tr>
+                          
                         </tbody>
                     </motion.table>
                     <button onClick={handleSubmit}>{isEditing ? "Modifier" : "Ajouter"}</button>
@@ -191,25 +240,27 @@ const handleSubmit = async () => {
                                 <th>Duré </th>
                                 <th>Date de creation</th>
                                 <th>Validation</th>
+                                <th>Status</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {filteredContrats.length > 0 ? (
-                                filteredContrats.map((contrat, index) => (
-                                <tr key={index}>
+                            {currentItems.length > 0 ? (
+                            currentItems.map((contrat)  => (
+                                <tr key={contrat.id}>
                                     <td>{contrat.id}</td>
                                     <td>{contrat.Immatricule}</td>
                                     <td>{contrat.Lieu}</td>
                                     <td>{contrat.Motif}</td>
-
                                     <td>{formatDate(contrat.date_debut)}</td>
                                     <td>{formatDate(contrat.date_fin)}</td>
-                                    <td>{contrat.jour_demande}</td>
-                                   
+                                    <td>{contrat.jour_demande}</td>                                  
                                     <td>{formatDate(contrat.date_creation)}</td>
                                     <td>{contrat.validate === "oui" ? "oui" : "non"}</td>
-
+                                    <td>
+                                        <button onClick={() => handleAccept(contrat)} style={{ color: 'green' }}>Accepter</button>
+                                        <button onClick={() => handleRefuse(contrat)} style={{ color: 'red' }}>Refuser</button>
+                                    </td>
                                     <td>
                                         <GrValidate
                                             onClick={() => handleValidation(contrat.id)}
@@ -220,13 +271,102 @@ const handleSubmit = async () => {
                                     </td>
                                 </tr>
                             ))
-                         ) : (
+                            ) : (
                                 <tr>
                                     <td colSpan="6" style={{ textAlign: 'center' }}>Aucun résultat trouvé</td>
                                 </tr>
                             )}
                         </tbody>
                     </table>
+                    {/* Pagination */}
+                    <div className="pagination">
+                    <button onClick={() => handlePageChange("prev")} disabled={currentPage === 1}>
+                        Précédent
+                    </button>
+                    <span>
+                        Page {currentPage} sur {totalPages}
+                    </span>
+                    <button onClick={() => handlePageChange("next")} disabled={currentPage === totalPages}>
+                        Suivant
+                    </button>
+                    </div>
+
+        {/* Tableaux des demandes acceptées et refusées */}
+        <div className="table-wrapper">
+          <h2>Demandes Acceptées</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Immatricule</th>
+                <th>Lieu</th>
+                <th>Motif</th>
+                <th>Date du début</th>
+                <th>Date fin</th>
+                <th>Durée</th>
+                <th>Date de création</th>
+              </tr>
+            </thead>
+            <tbody>
+              {acceptedContrats.length > 0 ? (
+                acceptedContrats.map((contrat, index) => (
+                  <tr key={index}>
+                    <td>{contrat.id}</td>
+                    <td>{contrat.Immatricule}</td>
+                    <td>{contrat.Lieu}</td>
+                    <td>{contrat.Motif}</td>
+                    <td>{formatDate(contrat.date_debut)}</td>
+                    <td>{formatDate(contrat.date_fin)}</td>
+                    <td>{contrat.jour_demande}</td>
+                    <td>{formatDate(contrat.date_creation)}</td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="8" style={{ textAlign: 'center' }}>Aucune demande acceptée</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        <div className="table-wrapper">
+          <h2>Demandes Refusées</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Immatricule</th>
+                <th>Lieu</th>
+                <th>Motif</th>
+                <th>Date du début</th>
+                <th>Date fin</th>
+                <th>Durée</th>
+                <th>Date de création</th>
+              </tr>
+            </thead>
+            <tbody>
+              {refusedContrats.length > 0 ? (
+                refusedContrats.map((contrat, index) => (
+                  <tr key={index}>
+                    <td>{contrat.id}</td>
+                    <td>{contrat.Immatricule}</td>
+                    <td>{contrat.Lieu}</td>
+                    <td>{contrat.Motif}</td>
+                    <td>{formatDate(contrat.date_debut)}</td>
+                    <td>{formatDate(contrat.date_fin)}</td>
+                    <td>{contrat.jour_demande}</td>
+                    <td>{formatDate(contrat.date_creation)}</td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="8" style={{ textAlign: 'center' }}>Aucune demande refusée</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
                 </div>
             </motion.div>
         </>
