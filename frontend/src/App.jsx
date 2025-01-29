@@ -10,6 +10,7 @@ import Jouissance from './components/congé/Jouissance';
 import Login from './components/Auth/Login';
 import Registre from './components/Auth/Registre';
 import Conge from './components/congé/Conge';
+import ProtectedRoute from './components/congé/ProtectedRoute';
 
 // Animation pour les transitions de pages
 const pageVariants = {
@@ -59,59 +60,24 @@ function AnimatedRoutes() {
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
-        {/* Route publique - Login */}
-        <Route
-          path="/"
-          element={
-            <motion.div initial="initial" animate="animate" exit="exit" variants={pageVariants} transition={{ duration: 0.5 }}>
-              <Login />
-            </motion.div>
-          }
-        />
+        <Route path="/" element={<Login />} />
+        <Route path="/registre" element={<Registre />} />
 
-        {/* Route publique - Registre */}
-        <Route
-          path="/registre"
-          element={
-            <motion.div initial="initial" animate="animate" exit="exit" variants={pageVariants} transition={{ duration: 0.5 }}>
-              <Registre />
-            </motion.div>
-          }
-        />
+        {/* Routes pour les employés */}
+        <Route element={<ProtectedRoute allowedRoles={['employe']} />}>
+          <Route path="/decision" element={<Decision />} />
+          <Route path="/jouissance" element={<Jouissance />} />
+        </Route>
 
-        {/* Routes protégées */}
-        <Route
-          path="/accueil"
-          element={
-            <motion.div initial="initial" animate="animate" exit="exit" variants={pageVariants} transition={{ duration: 0.5 }}>
-              <Accueil />
-            </motion.div>
-          }
-        />
-        <Route
-          path="/decision"
-          element={
-            <motion.div initial="initial" animate="animate" exit="exit" variants={pageVariants} transition={{ duration: 0.5 }}>
-              <Decision />
-            </motion.div>
-          }
-        />
-        <Route
-          path="/jouissance"
-          element={
-            <motion.div initial="initial" animate="animate" exit="exit" variants={pageVariants} transition={{ duration: 0.5 }}>
-              <Jouissance />
-            </motion.div>
-          }
-        />
-        <Route
-          path="/conge"
-          element={
-            <motion.div initial="initial" animate="animate" exit="exit" variants={pageVariants} transition={{ duration: 0.5 }}>
-              <Conge />
-            </motion.div>
-          }
-        />
+        {/* Route pour le responsable */}
+        <Route element={<ProtectedRoute allowedRoles={['responsable']} />}>
+          <Route path="/conge" element={<Conge />} />
+        </Route>
+
+        {/* Accueil accessible aux deux */}
+        <Route element={<ProtectedRoute allowedRoles={['employe', 'responsable']} />}>
+          <Route path="/accueil" element={<Accueil />} />
+        </Route>
       </Routes>
     </AnimatePresence>
   );

@@ -16,8 +16,6 @@ exports.addMonDecision = async (req, res) => {
     IM,date_validation, statut, date_expiration
   } = req.body;
 
-
-
   const query = `
     INSERT INTO Decision 
     (IM,date_validation, statut, date_expiration) 

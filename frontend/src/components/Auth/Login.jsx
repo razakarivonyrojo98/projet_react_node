@@ -24,35 +24,37 @@ const Login = () => {
     });
   };
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
+ const handleLogin = async (e) => {
+  e.preventDefault();
 
-    try {
-      // Appel API pour la connexion
-      const response = await axios.post('http://localhost:3000/api_auth/login', {
-        username,
-        password,
-      });
+  try {
+    const response = await axios.post('http://localhost:3000/api_auth/login', {
+      username,
+      password,
+    });
 
-      // Enregistrer le token ou rediriger l'utilisateur après une connexion réussie
-      alert('Connexion réussie !');
-      setErrorMessage('');
-      const token = response.data.token;
-      console.log('Token reçu:', token);
-      localStorage.setItem('authToken', token);
-      
-      navigate('/accueil'); // Navigation vers la page d'accueil
-    } catch (error) {
-      // Gérer les erreurs (401 ou autres)
-      if (error.response?.status === 401) {
-        setErrorMessage(error.response.data.error || 'Nom d’utilisateur ou mot de passe incorrect.');
-      } else {
-        setErrorMessage('Une erreur est survenue. Veuillez réessayer plus tard.');
-      }
-      setSuccessMessage('');
-      console.error('Erreur:', error.response?.data || error.message);
+    alert('Connexion réussie !');
+    setErrorMessage('');
+
+    const { token, role } = response.data; // Récupération du rôle
+    localStorage.setItem('authToken', token);
+    localStorage.setItem('userRole', role);
+
+    if (role === 'responsable') {
+      navigate('/conge');
+    } else {
+      navigate('/decision'); // Rediriger les employés vers "décision"
     }
-  };
+  } catch (error) {
+    if (error.response?.status === 401) {
+      setErrorMessage(error.response.data.error || 'Nom d’utilisateur ou mot de passe incorrect.');
+    } else {
+      setErrorMessage('Une erreur est survenue. Veuillez réessayer plus tard.');
+    }
+    setSuccessMessage('');
+  }
+};
+
 
   const entrer = () => {
     navigate("/registre");
